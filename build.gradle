@@ -1,0 +1,72 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.4.RELEASE")
+    }
+}
+
+plugins {
+    id 'org.flywaydb.flyway' version '4.0.3'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    baseName = 'shopping-spring-boot'
+    version =  '0.1.0'
+}
+
+test {
+    systemProperty "docker.host", System.getProperty("docker.host")
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    // Spring boot managed
+    compile 'org.projectlombok:lombok'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'org.springframework.boot:spring-boot-actuator'
+    //postgres
+    compile 'org.postgresql:postgresql:9.4-1206-jdbc42'
+    //flyway manages DB migrations
+    compile 'org.flywaydb:flyway-core:4.0.3'
+    //SpringBoot Rest dependency
+    compile 'org.springframework.boot:spring-boot-starter-data-rest'
+    //SpringBoot JPA dependency
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.apache.commons:commons-lang3:3.4'
+
+    //Swagger
+    compile 'io.springfox:springfox-swagger2:2.4.0'
+    compile 'io.springfox:springfox-swagger-ui:2.4.0'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.mockito:mockito-core'
+    testCompile 'org.hamcrest:hamcrest-core'
+
+    //Integration Tests
+    testCompile 'com.h2database:h2:1.3.148'
+    // Controller MVC tests
+    testCompile 'io.rest-assured:rest-assured:3.0.1'
+    testCompile 'io.rest-assured:spring-mock-mvc:3.0.1'
+}
+
+flyway {
+    url = 'jdbc:postgresql://dockerhost:5432/shoppingDB'
+    user = 'admin'
+    password = 'admin'
+    table = 'schema_version_shopping'
+    baselineOnMigrate = true
+}
